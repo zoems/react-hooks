@@ -3,24 +3,27 @@
 
 import * as React from 'react'
 
-function Greeting({initialName = ''}) {
-  // 🐨 initialize the state to the value from localStorage
+function useLocalStorageState(key, defaultValue = '') {
+  console.log("using storage")
 
-  // the initial name value is defined every time it is rendered ( as Greeting is called when re/rendered) but the function is only called on the first render
-
-  const [name, setName] = React.useState(() =>  window.localStorage.getItem('name') || initialName ) // here we call the initial name to define the initial state
-
-  // 🐨 Here's where you'll use `React.useEffect`. // gets called anytime function is re/rendered
-  // The callback should set the `name` in localStorage.
-  // 💰 window.localStorage.setItem('name', name)
+  const [state, setState] = React.useState(
+    () =>  window.localStorage.getItem(key) || defaultValue
+  ) // here we call the initial name to define the initial state
 
   React.useEffect(() => {
-    window.localStorage.setItem('name', name)
-  })
+    window.localStorage.setItem(key, state)
+  }, [key, state])
+
+  return [state, setState]
+}
+
+function Greeting({initialName = ''}) {
+  const [name, setName] = useLocalStorageState('name', initialName)
 
   function handleChange(event) {
     setName(event.target.value)
   }
+
   return (
     <div>
       <form>
@@ -33,7 +36,13 @@ function Greeting({initialName = ''}) {
 }
 
 function App() {
-  return <Greeting />
-}
+  const [count, setCount] = React.useState(1)
+
+  return (
+    <>
+    <button onClick={() => setCount(num => num + 1)}>{count}</button>
+    <Greeting />
+    </>
+)}
 
 export default App
