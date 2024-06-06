@@ -2,31 +2,49 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 // what is squares[1]
-//why does it not come up
+//why does winner = ,,,,
 
 import * as React from 'react'
 
 function Board() {
   // const squares = Array(9).fill(null)
-  const [squares, setSquares] = React.useState(Array(9).fill(null))
+  const start = Array(9).fill(null)
+  const [squares, setSquares] = React.useState(start)
 
-  const nextValue = calculateNextValue(squares)
-  const winner = calculateWinner(squares)
-  const status = calculateStatus(winner, squares, nextValue)
+  const [nextValue, setNextValue] = React.useState(calculateNextValue(squares))
+	const [winner, setWinner] = React.useState(calculateWinner(squares))
+	const [status, setStatus] = React.useState(calculateStatus(squares))
+
+
 
   function selectSquare(square) {
+    console.log(square)
     if (winner || squares[square]) {
       return
-    }
-    const squaresCopy = [...squares]
-    squaresCopy[square] = nextValue // setting the idex of the sqare to equal x or o
-    setSquares(squaresCopy)
+    } else {
+      console.log('hey')
+      const squaresCopy = [...squares]
+      squaresCopy[square] = nextValue
+
+      const newNextValue = calculateNextValue(squaresCopy)
+      const newWinner = calculateWinner(squaresCopy)
+      const newStatus = calculateStatus(newWinner, squaresCopy, newNextValue)
+
+      setNextValue(newNextValue)
+      setWinner(newWinner)
+      setStatus(newStatus)
+      setSquares(squaresCopy)
+
+      console.log(`this is nextValue ${winner}`)
+      console.log(`this is new nextvalue ${newWinner}`)
+
   }
-
-
+}
 
   function restart() {
-    setSquares(Array(9).fill(null))
+    setSquares(start)
+
+
     console.log('restart')
   }
 
