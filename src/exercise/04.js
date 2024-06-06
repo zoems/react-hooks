@@ -5,11 +5,15 @@
 //why does it not come up
 
 import * as React from 'react'
-import { useLocalStorageState } from '../utils'
 
 function Board() {
   // const squares = Array(9).fill(null)
-  const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null))
+  const [squares, setSquares] = React.useState( () => JSON.parse(window.localStorage.getItem('squares')) || Array(9).fill(null))
+
+  React.useEffect(() => {
+    window.localStorage.setItem('squares', JSON.stringify(squares))
+  }, [squares])
+
 
   const nextValue = calculateNextValue(squares)
   const winner = calculateWinner(squares)
