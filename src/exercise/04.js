@@ -2,42 +2,17 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 // what is squares[1]
-//why does it not come up
+// explain the onClicks
 
 import * as React from 'react'
+import { useLocalStorageState } from '../utils'
 
-function Board() {
+function Board({onClick, squares}) {
   // const squares = Array(9).fill(null)
-  const [squares, setSquares] = React.useState( () => JSON.parse(window.localStorage.getItem('squares')) || Array(9).fill(null))
-
-  React.useEffect(() => {
-    window.localStorage.setItem('squares', JSON.stringify(squares))
-  }, [squares])
-
-
-  const nextValue = calculateNextValue(squares)
-  const winner = calculateWinner(squares)
-  const status = calculateStatus(winner, squares, nextValue)
-
-  function selectSquare(square) {
-    if (winner || squares[square]) {
-      return
-    }
-    const squaresCopy = [...squares]
-    squaresCopy[square] = nextValue // setting the idex of the sqare to equal x or o
-    setSquares(squaresCopy)
-  }
-
-
-
-  function restart() {
-    setSquares(Array(9).fill(null))
-    console.log('restart')
-  }
 
   function renderSquare(i) {
     return (
-      <button className="square" onClick={() => selectSquare(i)}>
+      <button className="square" onClick={() => onClick(i)}>
         {squares[i]}
       </button>
     )
@@ -45,8 +20,6 @@ function Board() {
 
   return (
     <div>
-      {/* 🐨 put the status in the div below */}
-      <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
@@ -62,18 +35,38 @@ function Board() {
         {renderSquare(7)}
         {renderSquare(8)}
       </div>
-      <button className="restart" onClick={restart}>
-        restart
-      </button>
+
     </div>
   )
 }
 
 function Game() {
+  const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null))
+  const nextValue = calculateNextValue(squares)
+  const winner = calculateWinner(squares)
+  const status = calculateStatus(winner, squares, nextValue)
+  // onClick={currentSquares}
+
+  function selectSquare(square) {
+    if (winner || squares[square]) {
+      return
+    }
+    const squaresCopy = [...squares]
+    squaresCopy[square] = nextValue // setting the idex of the sqare to equal x or o
+    setSquares(squaresCopy)
+  }
+
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board squares={squares} onClick={selectSquare} />
+        <button className="restart" onClick={() => setSquares(Array(9).fill(null))}>
+        restart
+      </button>
+      <div className='status'>
+        <div className="status">{status}</div>
+      </div>
       </div>
     </div>
   )
