@@ -3,6 +3,8 @@
 
 import * as React from 'react'
 
+import { ErrorBoundary } from 'react-error-boundary'
+
 import {
   PokemonDataView,
   PokemonForm,
@@ -52,13 +54,23 @@ function PokemonInfo({pokemonName}) {
     return <PokemonDataView pokemon={pokemon} />
   } else if (status === 'rejected') {
     console.log('error')
-    return (
-      <div role="alert">
-        There was an error:{' '}
-        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
-      </div>
-    )
+    throw error
+    // return (
+    //   <div role="alert">
+    //     There was an error:{' '}
+    //     <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+    //   </div>
+    // )
   }
+}
+
+function ErrorFallback({error}) {
+  return (
+    <div role="alert">
+      There was an error:{' '}
+      <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+    </div>
+  )
 }
 
 function App() {
@@ -72,9 +84,11 @@ function App() {
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
-      <div className="pokemon-info">
-        <PokemonInfo pokemonName={pokemonName} />
-      </div>
+      <ErrorBoundary key={pokemonName} FallbackComponent={ErrorFallback} >
+        <div className="pokemon-info">
+          <PokemonInfo pokemonName={pokemonName} />
+        </div>
+      </ErrorBoundary>
     </div>
   )
 }
